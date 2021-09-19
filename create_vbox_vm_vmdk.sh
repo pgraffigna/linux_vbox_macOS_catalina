@@ -1,13 +1,12 @@
 #!/bin/bash
 #script para la creación de VM en VBox
 
-VM_NAME="Catalina"
+VM_NAME="Cata"
 VM_FOLDER="/home/pgraffigna/datos/virtualbox"
-ISO="/home/pgraffigna/datos/isos/macOS_Catalina.iso"
+VMDK="/home/pgraffigna/datos/isos/macOS_Catalina.vmdk"
 CPU=8
 MEM=8000
 VRAM=128
-DISK=40000
 OS=MacOS_64
 
 #Colores
@@ -36,16 +35,13 @@ echo -e "${yellowColor}Configurando el adaptador de red ${endColor}\n"
 #/usr/bin/vboxmanage modifyvm $VM_NAME --nic1 bridged --bridgeadapter1 eth0
 
 echo -e "${yellowColor}Activando USB ${endColor}\n"
-/usr/bin/vboxmanage modifyvm $VM_NAME --mouse usbtablet --usbxhci on
+/usr/bin/vboxmanage modifyvm $VM_NAME --mouse usbtablet --usbxhci on 
 
 echo -e "${yellowColor}Creando disco de tipo dinamico y agregando el ISO ${endColor}\n"
-/usr/bin/vboxmanage createhd --filename $VM_FOLDER/$VM_NAME/$VM_NAME.vdi --size $DISK --format VDI --variant Standard &>/dev/null
-
 /usr/bin/vboxmanage storagectl $VM_NAME --name "SATA Controller" --add sata --controller IntelAhci
 
-/usr/bin/vboxmanage storageattach $VM_NAME --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium $VM_FOLDER/$VM_NAME/$VM_NAME.vdi
-/usr/bin/vboxmanage storageattach $VM_NAME --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium $ISO
-/usr/bin/vboxmanage modifyvm $VM_NAME --boot1 dvd --boot2 disk --boot3 none --boot4 none
+/usr/bin/vboxmanage storageattach $VM_NAME --storagectl "SATA Controller" --type hdd --port 0 --device 0 --medium $VMDK
+/usr/bin/vboxmanage modifyvm $VM_NAME --boot1 disk --boot2 dvd --boot3 none --boot4 none
 
 echo -e "${greenColor}La VM esta lista!! ${endColor}"
 
